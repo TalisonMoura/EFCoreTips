@@ -11,7 +11,9 @@ namespace EFCore.Tips
             //QueryString();
             //ClearContext();
             //ToView();
-            NotUnicode();
+            //NotUnicode();
+            //AgregateOperators();
+            AgregateOperatorsInAgrupment();
         }
 
         static void QueryString()
@@ -83,6 +85,40 @@ namespace EFCore.Tips
             var sql = db.Database.GenerateCreateScript();
 
             Console.WriteLine($"Genereted Scrípt: {sql}");
+        }
+
+        static void AgregateOperators()
+        {
+            using var db = new ApplicationContext();
+
+            var sql = db.Departments
+                .GroupBy(x => x.Description)
+                .Select(d => new
+                {
+                    Description = d.Key,
+                    Count = d.Count(),
+                    Max = d.Max(a => a.Chair),
+                    Sum = d.Sum(a => a.Chair),
+                    Average = d.Average(a => a.Chair)
+                }).ToQueryString();
+
+            Console.WriteLine($"Genereted Query: {sql}");
+        }
+
+        static void AgregateOperatorsInAgrupment()
+        {
+            using var db = new ApplicationContext();
+
+            var sql = db.Departments
+                .GroupBy(x => x.Description)
+                .Where(c => c.Count() > 1)
+                .Select(d => new
+                {
+                    Description = d.Key,
+                    Count = d.Count(),
+                }).ToQueryString();
+
+            Console.WriteLine($"Genereted Query: {sql}");
         }
     }
 }
