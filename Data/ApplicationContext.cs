@@ -1,4 +1,5 @@
 ﻿using EFCore.Tips.Domain;
+using EFCore.Tips.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 
@@ -34,5 +35,7 @@ public class ApplicationContext : DbContext
         
         foreach (var property in properties)
             property.SetIsUnicode(false);
+
+        modelBuilder.ToSnakeCaseNames();
     }
 }
