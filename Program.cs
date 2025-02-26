@@ -1,5 +1,6 @@
 ﻿using EFCore.Tips.Data;
 using EFCore.Tips.Domain;
+using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 
 namespace EFCore.Tips
@@ -13,7 +14,8 @@ namespace EFCore.Tips
             //ToView();
             //NotUnicode();
             //AgregateOperators();
-            AgregateOperatorsInAgrupment();
+            //AgregateOperatorsInAgrupment();
+            EventsCounters();
         }
 
         static void QueryString()
@@ -119,6 +121,27 @@ namespace EFCore.Tips
                 }).ToQueryString();
 
             Console.WriteLine($"Genereted Query: {sql}");
+        }
+
+        // dotnet counters monitor -p {GetCurrentProcessId}.Id --counters Microsoft.EntityFrameworkCore
+        static void EventsCounters()
+        {
+            using var db = new ApplicationContext();
+            db.Database.EnsureDeleted();
+            db.Database.EnsureCreated();
+
+            Console.WriteLine($" PID: {Process.GetCurrentProcess().Id}");
+
+            while (Console.ReadKey().Key != ConsoleKey.Escape)
+            {
+                var department = new Department { Description = "Department without employee" };
+
+                db.Departments.Add(department);
+                db.SaveChanges();
+
+                _ = db.Departments.Find(Guid.Empty);
+                _ = db.Departments.AsNoTracking().FirstOrDefault();
+            }
         }
     }
 }
