@@ -1,6 +1,7 @@
 ﻿using EFCore.Tips.Data;
 using EFCore.Tips.Domain;
 using System.Diagnostics;
+using EFCore.Tips.Interceptors;
 using Microsoft.EntityFrameworkCore;
 
 namespace EFCore.Tips
@@ -15,7 +16,8 @@ namespace EFCore.Tips
             //NotUnicode();
             //AgregateOperators();
             //AgregateOperatorsInAgrupment();
-            EventsCounters();
+            //EventsCounters();
+            Listener();
         }
 
         static void QueryString()
@@ -143,5 +145,15 @@ namespace EFCore.Tips
                 _ = db.Departments.AsNoTracking().FirstOrDefault();
             }
         }
+
+        static void Listener()
+        {
+            DiagnosticListener.AllListeners.Subscribe(new MyInterceptorListener());
+
+            using var db = new ApplicationContext();
+
+            _ = db.Departments.Where(x => x.Id == Guid.Empty).ToArray();
+        }
+
     }
 }

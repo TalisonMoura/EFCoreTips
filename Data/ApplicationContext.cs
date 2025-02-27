@@ -1,7 +1,9 @@
 ﻿using EFCore.Tips.Domain;
 using EFCore.Tips.Extensions;
+using EFCore.Tips.SqlGenerator;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace EFCore.Tips.Data;
 
@@ -13,11 +15,13 @@ public class ApplicationContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlServer("Server=TALISONJM\\SQLEXPRESS;Database=EFCoreTips;Integrated Security=true;TrustServerCertificate=True;pooling=true")
-            .EnableSensitiveDataLogging()
-            .LogTo(Console.WriteLine, LogLevel.Information);
+        optionsBuilder
+            .UseSqlServer("Server=TALISONJM\\SQLEXPRESS;Database=EFCoreTips;Integrated Security=true;TrustServerCertificate=True;pooling=true")
+            //.ReplaceService<IQuerySqlGeneratorFactory, QueryGeneratorFactory>()
+            .EnableSensitiveDataLogging();
+            //.LogTo(Console.WriteLine, LogLevel.Information);
     }
-
+     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<ReportDepartment>(rd =>
